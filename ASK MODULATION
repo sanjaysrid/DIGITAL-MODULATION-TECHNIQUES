@@ -1,0 +1,42 @@
+% ASK Modulation in MATLAB
+
+% User input for binary data sequence
+data_bits = input('Enter binary data sequence (e.g., [1 0 1 0 1]): ');
+
+% Parameters
+bit_rate = 1;               % Bit rate (in bits per second)
+carrier_freq = 10;          % Carrier frequency (in Hz)
+amplitude = 5;              % Amplitude of the carrier signal
+time = 0:0.01:1;            % Time vector for one bit duration
+
+% Initialize modulated signal
+ask_signal = [];
+
+% ASK Modulation
+for bit = data_bits
+    if bit == 1
+        carrier_wave = amplitude * cos(2 * pi * carrier_freq * time);
+    else
+        carrier_wave = zeros(1, length(time));
+    end
+    ask_signal = [ask_signal carrier_wave];  % Concatenate the modulated signal
+end
+
+% Time vector for the complete signal
+total_time = linspace(0, length(data_bits), length(ask_signal));
+
+% Plot the ASK modulated signal
+figure;
+plot(total_time, ask_signal, 'LineWidth', 1.5);
+title('ASK Modulated Signal');
+xlabel('Time');
+ylabel('Amplitude');
+grid on;
+
+% Display the input and modulated signal
+disp('Input Binary Sequence: ');
+disp(data_bits);
+disp('ASK Modulated Signal Generated.');
+
+OUTPUT:
+
