@@ -1,0 +1,53 @@
+function qpsk_modulation()
+    % Get user input
+    bit_sequence = input('Enter the bit sequence (e.g., [0 0 1 1 0 0 1 1]): ');
+    sample_rate = input('Enter the sample rate (samples per second): ');
+    freq = input('Enter the carrier frequency (Hz): ');
+
+    % Validate input
+    if mod(length(bit_sequence), 2) ~= 0
+        error('Bit sequence length must be even for QPSK modulation.');
+    end
+
+    % QPSK Modulation Mapping
+    keys = {'00', '01', '10', '11'};
+    values = {exp(1i * 0), exp(1i * pi / 2), exp(1i * pi), exp(1i * 3 * pi / 2)};
+    bit_to_symbol = containers.Map(keys, values);
+
+    % Create symbols from bit pairs
+    symbols = arrayfun(@(i) bit_to_symbol(num2str(bit_sequence(i:i+1)')), 1:2:length(bit_sequence)-1, 'UniformOutput', false);
+    symbols = cell2mat(symbols);
+
+    % Time array
+    symbol_time = floor(sample_rate / freq);
+    t = (0:length(symbols)*symbol_time-1) / sample_rate;
+
+    % Create QPSK signal
+    signal = zeros(1, length(t));
+    for i = 1:length(symbols)
+        signal((i-1)*symbol_time+1:i*symbol_time) = symbols(i);
+    end
+
+    % I/Q components
+    i_component = real(signal);
+    q_component = imag(signal);
+
+    % Plot the QPSK signal
+    figure;
+    subplot(2, 1, 1);
+    plot(t, i_component, 'b', 'DisplayName', 'In-Phase Component');
+    hold on;
+    plot(t, q_component, 'r--', 'DisplayName', 'Quadrature Component');
+    title('QPSK Signal Components');
+    xlabel('Time');
+    ylabel('Amplitude');
+    legend;
+    hold off;
+
+    % Plot the QPSK constellation diagram
+    subplot(2, 1, 2);
+    scatter(i_component, q_component, 'r');
+    title('QPSK Constellation Diagram');
+    xlabel('In-Phase Component');
+    ylabel('Quadrature Component');
+end
