@@ -1,0 +1,52 @@
+clc;
+clear;
+close all;
+
+% User inputs
+bitRate = input('Enter the bit rate (bits per second): ');
+f0 = input('Enter the frequency for binary 0 (Hz): ');
+f1 = input('Enter the frequency for binary 1 (Hz): ');
+duration = input('Enter the duration of the signal (seconds): ');
+Fs = input('Enter the sampling frequency (Hz): ');
+
+% Time vector
+t = 0:1/Fs:duration-1/Fs;
+
+% Generate random binary data
+numBits = round(bitRate * duration);
+data = randi([0 1], 1, numBits);
+
+% Generate FSK signal
+fskSignal = zeros(1, length(t));
+bitDuration = 1 / bitRate;
+samplesPerBit = round(bitDuration * Fs);
+
+for i = 1:numBits
+    % Start and end indices for the current bit
+    startIdx = (i-1)*samplesPerBit + 1;
+    endIdx = i*samplesPerBit;
+    
+    if data(i) == 0
+        % Binary 0: use frequency f0
+        fskSignal(startIdx:endIdx) = sin(2 * pi * f0 * t(startIdx:endIdx));
+    else
+        % Binary 1: use frequency f1
+        fskSignal(startIdx:endIdx) = sin(2 * pi * f1 * t(startIdx:endIdx));
+    end
+end
+
+% Plot the FSK signal
+figure;
+plot(t, fskSignal);
+title('FSK Signal');
+xlabel('Time (s)');
+ylabel('Amplitude');
+grid on;
+
+% Plot the binary data for reference
+figure;
+stem(0:numBits-1, data, 'filled');
+title('Binary Data');
+xlabel('Bit Index');
+ylabel('Value');
+grid on;
