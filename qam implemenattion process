@@ -1,0 +1,68 @@
+% QAM Modulation Script in MATLAB
+
+% Get user input for QAM order and bitstream
+qam_order = input('Enter QAM order (e.g., 16, 64): ');
+bitstream = input('Enter bitstream (e.g., [1 1 0 1 0 1]): ');
+
+% Calculate the number of bits per symbol
+bits_per_symbol = log2(qam_order);
+
+% Ensure the bitstream length is a multiple of bits_per_symbol
+num_bits = length(bitstream);
+if mod(num_bits, bits_per_symbol) ~= 0
+    pad_length = bits_per_symbol - mod(num_bits, bits_per_symbol);
+    bitstream = [bitstream, zeros(1, pad_length)];
+end
+
+% Reshape bitstream into symbols
+symbols = reshape(bitstream, bits_per_symbol, []).';
+
+% Convert each bit group to its decimal equivalent
+decimal_values = bi2de(symbols, 'left-msb');
+
+% Map decimal values to QAM constellation points
+I_values = real(qammod(decimal_values, qam_order, 'UnitAveragePower', true));
+Q_values = imag(qammod(decimal_values, qam_order, 'UnitAveragePower', true));
+
+% Plot the constellation diagram
+scatter(I_values, Q_values, 'filled')
+grid on
+title(['QAM Constellation Diagram for ', num2str(qam_order), '-QAM'])
+xlabel('In-phase (I)')
+ylabel('Quadrature (Q)')
+axis([-1.5 1.5 -1.5 1.5]) % Adjust axis limits based on constellation size
+
+% QAM Modulation Script in MATLAB
+
+% Get user input for QAM order and bitstream
+qam_order = input('Enter QAM order (e.g., 16, 64): ');
+bitstream = input('Enter bitstream (e.g., [1 1 0 1 0 1]): ');
+
+% Calculate the number of bits per symbol
+bits_per_symbol = log2(qam_order);
+
+% Ensure the bitstream length is a multiple of bits_per_symbol
+num_bits = length(bitstream);
+if mod(num_bits, bits_per_symbol) ~= 0
+    pad_length = bits_per_symbol - mod(num_bits, bits_per_symbol);
+    bitstream = [bitstream, zeros(1, pad_length)];
+end
+
+% Reshape bitstream into symbols
+symbols = reshape(bitstream, bits_per_symbol, []).';
+
+% Convert each bit group to its decimal equivalent
+decimal_values = bi2de(symbols, 'left-msb');
+
+% Map decimal values to QAM constellation points
+I_values = real(qammod(decimal_values, qam_order, 'UnitAveragePower', true));
+Q_values = imag(qammod(decimal_values, qam_order, 'UnitAveragePower', true));
+
+% Plot the constellation diagram
+scatter(I_values, Q_values, 'filled')
+grid on
+title(['QAM Constellation Diagram for ', num2str(qam_order), '-QAM'])
+xlabel('In-phase (I)')
+ylabel('Quadrature (Q)')
+axis([-1.5 1.5 -1.5 1.5]) % Adjust axis limits based on constellation size
+
