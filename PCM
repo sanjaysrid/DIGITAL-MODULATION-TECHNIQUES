@@ -1,0 +1,44 @@
+% Parameters
+frequency = 5;  % Frequency of the analog signal (Hz)
+sampling_rate = 50;  % Sampling rate (samples per second)
+quantization_levels = 16;  % Number of quantization levels
+duration = 1;  % Duration in seconds
+
+% Generate the analog signal (a simple sine wave)
+t = linspace(0, duration, sampling_rate * duration);
+analog_signal = sin(2 * pi * frequency * t);
+
+% Quantization
+max_val = max(analog_signal);
+min_val = min(analog_signal);
+quantized_signal = round((analog_signal - min_val) / (max_val - min_val) * (quantization_levels - 1));
+quantized_signal = quantized_signal * (max_val - min_val) / (quantization_levels - 1) + min_val;
+
+% Plotting the signals
+figure;
+plot(t, analog_signal, '-o', 'DisplayName', 'Original Analog Signal');
+hold on;
+stairs(t, quantized_signal, 'DisplayName', 'Quantized Signal');
+xlabel('Time (s)');
+ylabel('Amplitude');
+title('Pulse Code Modulation (PCM) Example');
+legend;
+grid on;
+
+% Encoding (Simple Example)
+encoded_signal = (quantized_signal - min_val) / (max_val - min_val) * (quantization_levels - 1);
+encoded_signal = uint8(encoded_signal);  % Convert to integer
+
+% Decoding (Reconstruction)
+decoded_signal = double(encoded_signal) * (max_val - min_val) / (quantization_levels - 1) + min_val;
+
+% Plot the decoded signal
+figure;
+plot(t, analog_signal, 'DisplayName', 'Original Analog Signal');
+hold on;
+plot(t, decoded_signal, '--', 'DisplayName', 'Decoded Signal');
+xlabel('Time (s)');
+ylabel('Amplitude');
+title('PCM: Original vs Decoded Signal');
+legend;
+grid on;
