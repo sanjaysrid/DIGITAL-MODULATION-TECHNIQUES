@@ -1,0 +1,42 @@
+% Get input from the user
+N = input('Enter the number of subcarriers (e.g., 64): ');
+CP = input('Enter the length of the Cyclic Prefix (e.g., 16): ');
+M = input('Enter the QAM Modulation order (e.g., 16 for 16-QAM): ');
+numSymbols = input('Enter the number of OFDM symbols (e.g., 10): ');
+
+% Transmitter
+
+% Generate random data
+data = randi([0 M-1], N, numSymbols);
+
+% QAM Modulation
+modData = qammod(data, M, 'UnitAveragePower', true);
+
+% IFFT to create OFDM symbols
+ofdmSymbols = ifft(modData, N);
+
+% Add Cyclic Prefix
+ofdmSymbols_CP = [ofdmSymbols(end-CP+1:end, :); ofdmSymbols];
+
+% Flatten to create a single transmitted stream
+txSignal = ofdmSymbols_CP(:);
+
+% Channel (for simplicity, assume no channel effects)
+
+% Receiver
+
+% Reshape the received signal into OFDM symbols
+rxSymbols_CP = reshape(txSignal, N + CP, numSymbols);
+
+% Remove Cyclic Prefix
+rxSymbols = rxSymbols_CP(CP+1:end, :);
+
+% FFT to recover the original QAM symbols
+rxModData = fft(rxSymbols, N);
+
+% QAM Demodulation
+rxData = qamdemod(rxModData, M, 'UnitAveragePower', true);
+
+% Check if transmitted data matches received data
+numErrors = sum(sum(data ~= rxData));
+fprintf('Number of bit errors: %d\n', numErrors);
